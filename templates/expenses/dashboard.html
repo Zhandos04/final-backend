@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Overview for {{ month_name }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h5 class="text-success">Income</h5>
+                    <h3>{{ income }} ₸</h3>
+                </div>
+                <div class="mb-3">
+                    <h5 class="text-danger">Expenses</h5>
+                    <h3>{{ expenses }} ₸</h3>
+                </div>
+                <div class="pt-2 border-top">
+                    <h5>Balance</h5>
+                    <h3 class="{% if balance >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        {{ balance }} ₸
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Quick Actions</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'add_transaction' %}?type=income" class="btn btn-success">
+                        <i class="fas fa-plus-circle me-2"></i>Add Income
+                    </a>
+                    <a href="{% url 'add_transaction' %}?type=expense" class="btn btn-danger">
+                        <i class="fas fa-minus-circle me-2"></i>Add Expense
+                    </a>
+                    <a href="{% url 'add_category' %}" class="btn btn-info">
+                        <i class="fas fa-folder-plus me-2"></i>Add Category
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Expenses by Category</h4>
+            </div>
+            <div class="card-body">
+                <canvas id="expenseChart" height="300"></canvas>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Recent Transactions</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction.date|date:"d.m.Y" }}</td>
+                                <td>{{ transaction.category.name }}</td>
+                                <td>{{ transaction.description }}</td>
+                                <td class="{% if transaction.transaction_type == 'income' %}text-success{% else %}text-danger{% endif %}">
+                                    {% if transaction.transaction_type == 'income' %}+{% else %}-{% endif %}{{ transaction.amount }} ₸
+                                </td>
+                                <td>
+                                    <a href="{% url 'edit_transaction' transaction.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'delete_transaction' transaction.id %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No transactions yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('expenseChart').getContext('2d');
+    
+    const categoryData = {{ category_data|safe }};
+    
+    // Check if data exists
+    if (categoryData && categoryData.length > 0) {
+        const labels = categoryData.map(item => item.name);
+        const data = categoryData.map(item => item.amount);
+        
+        const backgroundColors = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+            '#FF9F40', '#8AC249', '#EA80FC', '#00B8D4', '#FF6E40'
+        ];
+        
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColors.slice(0, data.length),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+    } else {
+        // If no data, show message
+        const container = document.getElementById('expenseChart').parentNode;
+        container.innerHTML = '<div class="text-center py-5 text-muted">No expense data for the current month. Add expenses to see the chart.</div>';
+    }
+});
+</script>
+{% endblock %}

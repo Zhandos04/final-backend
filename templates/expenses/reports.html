@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load expense_extras %}
+
+{% block content %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="card-title mb-0">Monthly Report</h4>
+    </div>
+    <div class="card-body">
+        <canvas id="monthlyChart" height="300"></canvas>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Monthly Statistics</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Income</th>
+                            <th>Expenses</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in months|length|get_range %}
+                        <tr>
+                            <td>{{ months|get_item:i }}</td>
+                            <td class="text-success">{{ incomes|get_item:i }} ₸</td>
+                            <td class="text-danger">{{ expenses|get_item:i }} ₸</td>
+                            <td class="{% if savings|get_item:i >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                {{ savings|get_item:i }} ₸
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Money Management Tips</h4>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <h5 class="mb-1">Create a Budget</h5>
+                        <p class="mb-1">Plan your expenses in advance and stick to the plan.</p>
+                    </div>
+                    <div class="list-group-item">
+                        <h5 class="mb-1">50/30/20 Rule</h5>
+                        <p class="mb-1">Spend 50% on necessities, 30% on wants, and 20% on savings.</p>
+                    </div>
+                    <div class="list-group-item">
+                        <h5 class="mb-1">Automatic Transfers</h5>
+                        <p class="mb-1">Set up automatic transfers of part of your salary to a savings account.</p>
+                    </div>
+                    <div class="list-group-item">
+                        <h5 class="mb-1">Cut Unnecessary Expenses</h5>
+                        <p class="mb-1">Analyze where your money goes and what you can give up.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+    
+    const months = {{ months|safe }};
+    const incomes = {{ incomes|safe }};
+    const expenses = {{ expenses|safe }};
+    const balance = {{ savings|safe }};
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Income',
+                    data: incomes,
+                    backgroundColor: '#1cc88a',
+                    borderColor: '#1cc88a',
+                    borderWidth: 1,
+                    order: 1
+                },
+                {
+                    label: 'Expenses',
+                    data: expenses,
+                    backgroundColor: '#e74a3b',
+                    borderColor: '#e74a3b',
+                    borderWidth: 1,
+                    order: 2
+                },
+                {
+                    label: 'Balance',
+                    data: balance,
+                    backgroundColor: '#4e73df',
+                    borderColor: '#4e73df',
+                    borderWidth: 1,
+                    order: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Amount (₸)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            var label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += context.parsed.y + ' ₸';
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

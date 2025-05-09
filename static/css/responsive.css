@@ -1,0 +1,50 @@
+/* Для маленьких устройств (телефоны, 576px и меньше) */
+@media (max-width: 576px) {
+    .card-title {
+        font-size: 1.25rem;
+    }
+    
+    h3 {
+        font-size: 1.5rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .table th, .table td {
+        padding: 0.5rem;
+    }
+}
+
+/* Для средних устройств (планшеты, 768px и меньше) */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Для больших устройств (ноутбуки/десктопы, 992px и меньше) */
+@media (max-width: 992px) {
+    .row {
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+    }
+    
+    .col-lg-4, .col-lg-8 {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
+
+/* Для очень больших устройств (большие десктопы, 1200px и больше) */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+}
