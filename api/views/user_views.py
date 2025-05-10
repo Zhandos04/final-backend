@@ -44,15 +44,24 @@ class RegisterView(generics.CreateAPIView):
 
 class LogoutView(views.APIView):
     """
-    API для выхода из системы (инвалидация токена).
+    API для выхода из системы.
+    Поддерживает как JWT token blacklisting, так и сессионный logout.
     """
     permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request):
         try:
-            refresh_token = request.data["refresh"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response({"message": "Успешный выход из системы"}, status=status.HTTP_200_OK)
+            # Проверяем, содержит ли запрос refresh token
+            if 'refresh' in request.data:
+                # Если есть refresh token, блокируем его (JWT logout)
+                refresh_token = request.data["refresh"]
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+                return Response({"message": "Успешный выход из системы"}, status=status.HTTP_200_OK)
+            else:
+                # Если нет refresh token, используем Django logout (session-based)
+                from django.contrib.auth import logout
+                logout(request)
+                return Response({"message": "Успешный выход из системы"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
