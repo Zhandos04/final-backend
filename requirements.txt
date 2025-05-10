@@ -1,11 +1,44 @@
+# Базовые зависимости Django
 Django>=3.2,<4.0
 psycopg2-binary>=2.9.3
-djangorestframework>=3.13.0
-django-crispy-forms>=1.14.0
-crispy-bootstrap5>=0.6
 django-environ>=0.8.1
 Pillow>=9.0.0
+
+# Фронтенд
+django-crispy-forms>=1.14.0
+crispy-bootstrap5>=0.6
+django-chartjs>=2.2.1
+
+# REST API
+djangorestframework>=3.13.0
+django-filter>=21.1
+drf-yasg>=1.20.0  # Для Swagger API документации
+markdown>=3.3.6   # Для красивого API просмотра
+django-cors-headers>=3.11.0
+
+# Кэширование и очереди задач
+redis>=4.2.0
+celery>=5.2.3
+django-celery-beat>=2.2.1
+django-celery-results>=2.3.0
+
+# AWS S3
+django-storages>=1.12.3
+boto3>=1.21.0
+
+# Тестирование и мониторинг
 pytest>=7.0.0
 pytest-django>=4.5.2
+django-silk>=4.2.0  # Для профилирования
+coverage>=6.3.2
+factory-boy>=3.2.1
+
+# Продакшн
 gunicorn>=20.1.0
-django-chartjs>=2.2.1
+whitenoise>=6.0.0  # Для раздачи статики
+
+# Дополнительно
+djoser>=2.1.0      # Для аутентификации
+djangorestframework-simplejwt>=5.0.0  # JWT токены
+python-dateutil>=2.8.2
+pyyaml>=6.0

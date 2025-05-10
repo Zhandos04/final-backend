@@ -14,16 +14,17 @@ fi
 # Установка всех зависимостей
 pip install -r requirements.txt
 
-# Создание миграций для всех приложений
-python manage.py makemigrations expenses
-python manage.py makemigrations users
+# Определяем, какой это контейнер по имени команды
+COMMAND="$@"
 
-# Применение миграций
-python manage.py migrate
-
-# Создание профилей и предустановленных категорий
-python manage.py shell -c "
-from django.contrib.auth.models import User
+# Миграции запускаем только в web-контейнере или если это явно указано
+if [[ "$COMMAND" == *"runserver"* ]] || [[ "$CONTAINER_ROLE" == "web" ]] || [[ "$PERFORM_MIGRATIONS" == "1" ]]; then
+    echo "Выполнение миграций..."
+    python manage.py makemigrations
+    python manage.py migrate
+    
+    # Создание профилей и предустановленных категорий - обратите внимание, что отступы удалены!
+    python manage.py shell -c "from django.contrib.auth.models import User
 from users.models import Profile
 from expenses.models import Category
 
@@ -36,37 +37,37 @@ for user in User.objects.all():
         Profile.objects.create(user=user)
         print(f'Created profile for {user.username}')
 
-# Default expense categories
-default_expense_categories = [
-    'Groceries', 'Restaurants & Cafes', 'Transport', 'Housing', 'Utilities', 
-    'Internet & Communications', 'Entertainment', 'Clothing & Footwear', 'Health & Medicine', 'Education', 
-    'Travel', 'Gifts', 'Household Items', 'Electronics', 'Sports', 
-    'Beauty & Self-care', 'Hobbies', 'Pets', 'Taxi', 'Books'
-]
-
-# Default income categories
-default_income_categories = [
-    'Salary', 'Freelance', 'Business', 'Investments', 'Gifts',
-    'Interest', 'Rental Income', 'Dividends', 'Bonuses', 'Other Income'
-]
-
-# Создаем категории для всех пользователей
+# Проверка, есть ли категории у пользователей
 for user in User.objects.all():
-    # Проверяем, есть ли у пользователя уже категории
-    existing_categories = Category.objects.filter(user=user).count()
-    
-    if existing_categories == 0:
-        # Создаем категории расходов и доходов
+    if Category.objects.filter(user=user).count() == 0:
+        # Дефолтные категории расходов
+        default_expense_categories = [
+            'Groceries', 'Restaurants & Cafes', 'Transport', 'Housing', 'Utilities', 
+            'Internet & Communications', 'Entertainment', 'Clothing & Footwear', 'Health & Medicine', 'Education', 
+            'Travel', 'Gifts', 'Household Items', 'Electronics', 'Sports', 
+            'Beauty & Self-care', 'Hobbies', 'Pets', 'Taxi', 'Books'
+        ]
+        
+        # Дефолтные категории доходов
+        default_income_categories = [
+            'Salary', 'Freelance', 'Business', 'Investments', 'Gifts',
+            'Interest', 'Rental Income', 'Dividends', 'Bonuses', 'Other Income'
+        ]
+        
+        # Создаем категории расходов
         for category_name in default_expense_categories:
             Category.objects.create(name=category_name, user=user)
             print(f'Created expense category {category_name} for {user.username}')
             
+        # Создаем категории доходов
         for category_name in default_income_categories:
             Category.objects.create(name=category_name, user=user)
-            print(f'Created income category {category_name} for {user.username}')
-"
-
-# Сбор статических файлов
-python manage.py collectstatic --no-input
+            print(f'Created income category {category_name} for {user.username}')"
+    
+    # Сбор статических файлов
+    python manage.py collectstatic --no-input
+else
+    echo "Пропускаем выполнение миграций в этом контейнере..."
+fi
 
 exec "$@"
