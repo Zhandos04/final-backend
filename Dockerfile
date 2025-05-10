@@ -26,5 +26,8 @@ COPY . /app/
 # Даем права на выполнение скрипту
 RUN chmod +x /app/entrypoint.sh
 
+# Экспортируем порт (Railway установит свой PORT)
+EXPOSE ${PORT:-8000}
+
 # Запускаем entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
