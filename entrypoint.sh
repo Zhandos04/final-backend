@@ -11,6 +11,9 @@ then
     echo "PostgreSQL started"
 fi
 
+# Использовать PORT из переменных окружения Railway или 8000 по умолчанию
+PORT="${PORT:-8000}"
+
 # Установка всех зависимостей
 pip install -r requirements.txt
 
@@ -70,4 +73,11 @@ else
     echo "Пропускаем выполнение миграций в этом контейнере..."
 fi
 
-exec "$@"
+# Проверяем, был ли передан стандартный аргумент
+if [ -z "$COMMAND" ] || [ "$COMMAND" = "gunicorn budget_app.wsgi:application --bind 0.0.0.0:8000" ]; then
+    # Запускаем с использованием PORT из Railway
+    exec gunicorn budget_app.wsgi:application --bind 0.0.0.0:$PORT
+else
+    # Если был передан другой аргумент, используем его
+    exec "$@"
+fi
