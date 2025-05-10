@@ -67,6 +67,17 @@ for user in User.objects.all():
             Category.objects.create(name=category_name, user=user)
             print(f'Created income category {category_name} for {user.username}')"
     
+    # Создание администратора, если его еще нет
+    echo "Проверка наличия администратора..."
+    python manage.py shell -c "
+from django.contrib.auth.models import User
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+    print('Создан суперпользователь admin с паролем admin123')
+else:
+    print('Суперпользователь admin уже существует')
+"
+    
     # Сбор статических файлов
     python manage.py collectstatic --no-input
 else
