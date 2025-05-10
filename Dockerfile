@@ -26,8 +26,5 @@ COPY . /app/
 # Даем права на выполнение скрипту
 RUN chmod +x /app/entrypoint.sh
 
-# Экспортируем фиксированный порт 8000
-EXPOSE 8000
-
 # Запускаем entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]

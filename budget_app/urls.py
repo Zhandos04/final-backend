@@ -9,7 +9,6 @@ from django.conf.urls.static import static
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from django.http import HttpResponse
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -24,12 +23,7 @@ schema_view = get_schema_view(
     permission_classes=[permissions.AllowAny],
 )
 
-
-def health_check(request):
-    return HttpResponse("OK")
-
 urlpatterns = [
-    path('health/', health_check, name='health_check'), 
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('expenses/', include('expenses.urls')),

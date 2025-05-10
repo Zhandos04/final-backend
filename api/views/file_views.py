@@ -4,8 +4,6 @@ from rest_framework.response import Response
 from django.conf import settings
 import os
 import uuid
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 class FileUploadView(views.APIView):
     """
@@ -21,39 +19,6 @@ class FileUploadView(views.APIView):
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]
     permission_classes = [permissions.IsAuthenticated]
     
-    @swagger_auto_schema(
-        operation_description="Загрузка файла в хранилище",
-        manual_parameters=[
-            openapi.Parameter(
-                name='file',
-                in_=openapi.IN_FORM,
-                description='Файл для загрузки',
-                type=openapi.TYPE_FILE,
-                required=True
-            )
-        ],
-        responses={
-            200: openapi.Response(
-                description="Успешная загрузка",
-                examples={
-                    'application/json': {
-                        'status': 'success',
-                        'file_url': 'https://example.com/media/uploads/file.jpg',
-                        'filename': 'uuid4.jpg',
-                        'original_filename': 'upload.jpg',
-                        'file_size': 12345,
-                        'content_type': 'image/jpeg',
-                        'storage_info': {
-                            'storage_type': 'S3',
-                            'message': 'Файл успешно загружен в AWS S3'
-                        }
-                    }
-                }
-            ),
-            400: 'Неверный запрос',
-            500: 'Внутренняя ошибка сервера'
-        }
-    )
     def post(self, request):
         try:
             file_obj = request.FILES.get('file')

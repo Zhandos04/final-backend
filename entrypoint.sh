@@ -18,12 +18,12 @@ pip install -r requirements.txt
 COMMAND="$@"
 
 # Миграции запускаем только в web-контейнере или если это явно указано
-if [[ "$COMMAND" == *"runserver"* ]] || [[ "$COMMAND" == *"gunicorn"* ]] || [[ "$CONTAINER_ROLE" == "web" ]] || [[ "$PERFORM_MIGRATIONS" == "1" ]]; then
+if [[ "$COMMAND" == *"runserver"* ]] || [[ "$CONTAINER_ROLE" == "web" ]] || [[ "$PERFORM_MIGRATIONS" == "1" ]]; then
     echo "Выполнение миграций..."
     python manage.py makemigrations
     python manage.py migrate
     
-    # Создание профилей и предустановленных категорий
+    # Создание профилей и предустановленных категорий - обратите внимание, что отступы удалены!
     python manage.py shell -c "from django.contrib.auth.models import User
 from users.models import Profile
 from expenses.models import Category
@@ -70,9 +70,4 @@ else
     echo "Пропускаем выполнение миграций в этом контейнере..."
 fi
 
-# Используем фиксированный порт 8000 вместо переменной
-if [[ "$COMMAND" == *"gunicorn"* ]]; then
-    exec gunicorn budget_app.wsgi:application --bind 0.0.0.0:8000
-else
-    exec "$@"
-fi
+exec "$@"

@@ -4,7 +4,7 @@ services:
   web:
     build: .
     restart: always
-    command: gunicorn budget_app.wsgi:application --bind 0.0.0.0:${PORT:-8000}
+    command: gunicorn budget_app.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/app/
       - static_volume:/app/staticfiles
@@ -14,8 +14,6 @@ services:
     environment:
       - CONTAINER_ROLE=web
       - PERFORM_MIGRATIONS=1
-    ports:
-      - "${PORT:-8000}:${PORT:-8000}"
     depends_on:
       - db
       - redis
@@ -90,7 +88,7 @@ services:
   # Упрощенный сервис тестирования
   api-tests:
     build: .
-    command: python manage.py test api.tests --settings=budget_app.settings_test
+    command: python manage.py test api.tests
     volumes:
       - .:/app/
     env_file:
