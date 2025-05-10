@@ -10,18 +10,22 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+swagger_info = openapi.Info(
+    title="Budget Tracker API",
+    default_version='v1',
+    description="API для управления личными финансами",
+    terms_of_service="https://www.example.com/terms/",
+    contact=openapi.Contact(email="contact@example.com"),
+    license=openapi.License(name="BSD License"),
+)
+
 schema_view = get_schema_view(
-    openapi.Info(
-        title="Budget Tracker API",
-        default_version='v1',
-        description="API для управления личными финансами",
-        terms_of_service="https://www.example.com/terms/",
-        contact=openapi.Contact(email="contact@example.com"),
-        license=openapi.License(name="BSD License"),
-    ),
-    public=True,  # Убедись, что это True
-    permission_classes=[permissions.AllowAny],  # Разреши доступ без авторизации
-    url=getattr(settings, 'SWAGGER_ROOT_URL', None),  # Добавь эту строку
+    swagger_info,
+    public=True,
+    permission_classes=[permissions.AllowAny],
+    url=None if settings.DEBUG else "https://final-backend-production-7ed9.up.railway.app",
+    validators=['flex', 'ssv'],
+    patterns=[path('api/v1/', include('api.urls'))],
 )
 urlpatterns = [
     path('admin/', admin.site.urls),
