@@ -70,12 +70,9 @@ else
     echo "Пропускаем выполнение миграций в этом контейнере..."
 fi
 
-# Используем PORT из переменных окружения, если он определен
-PORT="${PORT:-8000}"
-
-# Если команда gunicorn, добавляем порт
+# Используем фиксированный порт 8000 вместо переменной
 if [[ "$COMMAND" == *"gunicorn"* ]]; then
-    exec gunicorn budget_app.wsgi:application --bind 0.0.0.0:$PORT
+    exec gunicorn budget_app.wsgi:application --bind 0.0.0.0:8000
 else
     exec "$@"
 fi
