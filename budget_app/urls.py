@@ -19,10 +19,10 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="contact@example.com"),
         license=openapi.License(name="BSD License"),
     ),
-    public=True,
-    permission_classes=[permissions.AllowAny],
+    public=True,  # Убедись, что это True
+    permission_classes=[permissions.AllowAny],  # Разреши доступ без авторизации
+    url=getattr(settings, 'SWAGGER_ROOT_URL', None),  # Добавь эту строку
 )
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
