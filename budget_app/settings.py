@@ -2,15 +2,18 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-default-key-change-in-production")
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = int(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost 127.0.0.1 [::1]").split(" ")
@@ -44,7 +47,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Добавь эту строку после SecurityMiddleware
+    'whitenoise.middleware.WhiteNoiseMiddleware',  #  эту строку после SecurityMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',  # Убедись, что CORS middleware стоит здесь
     'django.middleware.common.CommonMiddleware',
@@ -123,6 +126,7 @@ USE_TZ = True
 
 # AWS S3 Storage Settings
 # Настройка статических файлов - всегда локально
+
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
@@ -150,8 +154,10 @@ if USE_S3:
     
     # Использование стандартного S3Boto3Storage без кастомного класса
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
     # Указываем префикс (папку) для медиа-файлов
     AWS_LOCATION = MEDIA_LOCATION
+
 else:
     # Медиафайлы локально, если S3 отключен
     MEDIA_URL = '/media/'
