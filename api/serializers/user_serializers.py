@@ -19,12 +19,10 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', None)
         
-        # Обновляем пользователя
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
         
-        # Обновляем профиль если есть данные
         if profile_data:
             for attr, value in profile_data.items():
                 setattr(instance.profile, attr, value)
