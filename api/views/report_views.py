@@ -10,6 +10,7 @@ from django.utils import timezone
 import datetime
 
 class ReportViewSet(viewsets.ViewSet):
+
     """
     API для получения отчетов и аналитики по финансам.
     """
@@ -17,6 +18,7 @@ class ReportViewSet(viewsets.ViewSet):
     throttle_classes = [UserRateThrottle]
     
     def get_transactions(self, year=None, month=None):
+
         """Вспомогательный метод для получения транзакций"""
         queryset = Transaction.objects.filter(user=self.request.user)
         
@@ -30,6 +32,7 @@ class ReportViewSet(viewsets.ViewSet):
     
     @action(detail=False, methods=['get'], url_path='monthly-summary/(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})')
     def monthly_summary(self, request, year=None, month=None):
+
         """Получить месячную сводку по доходам и расходам"""
         if not year or not month:
             now = timezone.now()
@@ -100,6 +103,7 @@ class ReportViewSet(viewsets.ViewSet):
     
     @action(detail=False, methods=['get'], url_path='yearly-comparison/(?P<year>[0-9]{4})')
     def yearly_comparison(self, request, year=None):
+
         """Получить сравнение доходов и расходов по месяцам за год"""
         if not year:
             now = timezone.now()
@@ -124,6 +128,7 @@ class ReportViewSet(viewsets.ViewSet):
     
     @action(detail=False, methods=['get'])
     def trends(self, request):
+
         """Получить тренды доходов и расходов за последние 6 месяцев"""
         # Последние 6 месяцев
         end_date = timezone.now().date()
@@ -162,6 +167,7 @@ class ReportViewSet(viewsets.ViewSet):
     
     @action(detail=False, methods=['get'])
     def savings_rate(self, request):
+
         """Получить ставку сбережений (savings rate) по месяцам"""
         # Последние 12 месяцев
         end_date = timezone.now().date()
@@ -182,6 +188,7 @@ class ReportViewSet(viewsets.ViewSet):
         ).order_by('month')
         
         # Рассчитываем ставку сбережений
+        
         result = []
         for item in monthly_data:
             income = item['income'] or 0

@@ -9,6 +9,7 @@ from django.db.models import Sum
 import datetime
 
 class GoalViewSet(viewsets.ModelViewSet):
+
     """
     API для управления финансовыми целями пользователя.
     """
@@ -24,6 +25,7 @@ class GoalViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def progress(self, request):
+
         """Получить прогресс по всем целям"""
         goals = self.get_queryset()
         
@@ -84,6 +86,7 @@ class GoalViewSet(viewsets.ModelViewSet):
             )
         
         # Проверяем дату
+
         if date_str:
             try:
                 date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -94,7 +97,8 @@ class GoalViewSet(viewsets.ModelViewSet):
                 )
         else:
             date = timezone.now().date()
-        
+
+
         # Создаем взнос
         contribution = GoalContribution.objects.create(
             goal=goal,
@@ -104,6 +108,7 @@ class GoalViewSet(viewsets.ModelViewSet):
         )
         
         # Обновляем текущую сумму цели
+        
         goal.refresh_from_db()
         
         return Response({

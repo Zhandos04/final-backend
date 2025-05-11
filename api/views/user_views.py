@@ -8,6 +8,7 @@ from api.serializers.user_serializers import UserSerializer, RegisterSerializer
 from api.throttling import UserRateThrottle, AnonRateThrottle
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
+
     """
     API для просмотра и обновления профиля пользователя.
     """
@@ -19,6 +20,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 class RegisterView(generics.CreateAPIView):
+
     """
     API для регистрации новых пользователей.
     """
@@ -43,6 +45,7 @@ class RegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 class LogoutView(views.APIView):
+
     """
     API для выхода из системы.
     Поддерживает как JWT token blacklisting, так и сессионный logout.
@@ -58,10 +61,13 @@ class LogoutView(views.APIView):
                 token = RefreshToken(refresh_token)
                 token.blacklist()
                 return Response({"message": "Успешный выход из системы"}, status=status.HTTP_200_OK)
+            
             else:
                 # Если нет refresh token, используем Django logout (session-based)
                 from django.contrib.auth import logout
                 logout(request)
                 return Response({"message": "Успешный выход из системы"}, status=status.HTTP_200_OK)
+        
+        
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

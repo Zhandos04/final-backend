@@ -11,6 +11,7 @@ from django.utils import timezone
 import datetime
 
 class TransactionViewSet(viewsets.ModelViewSet):
+
     """
     API для управления транзакциями пользователя.
     """
@@ -31,6 +32,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def by_month(self, request):
+
         """Получить транзакции за указанный месяц"""
         now = timezone.now()
         year = request.query_params.get('year', now.year)
@@ -46,6 +48,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def by_category(self, request, category_id=None):
+
         """Получить транзакции по указанной категории"""
         category_id = request.query_params.get('category_id')
         if not category_id:
@@ -60,6 +63,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def stats(self, request):
+        
         """Получить статистику по транзакциям"""
         now = timezone.now()
         year = int(request.query_params.get('year', now.year))
