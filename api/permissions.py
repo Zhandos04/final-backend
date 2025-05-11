@@ -14,6 +14,7 @@ class IsOwner(permissions.BasePermission):
         # в зависимости от модели
         if hasattr(obj, 'user'):
             return obj.user == request.user
+        
         elif hasattr(obj, 'owner'):
             return obj.owner == request.user
             

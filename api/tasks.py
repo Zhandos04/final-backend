@@ -8,6 +8,7 @@ import io
 
 @shared_task
 def generate_monthly_report(user_id):
+
     """
     Генерирует ежемесячный отчет пользователя (без отправки email)
     """
@@ -31,11 +32,13 @@ def generate_monthly_report(user_id):
         )
         
         # Суммарные показатели
+
         income = transactions.filter(transaction_type='income').aggregate(Sum('amount'))['amount__sum'] or 0
         expenses = transactions.filter(transaction_type='expense').aggregate(Sum('amount'))['amount__sum'] or 0
         balance = income - expenses
         
         # Сохраняем итоги месяца в БД
+
         summary, created = MonthlyBudgetSummary.objects.update_or_create(
             user=user,
             month=last_month.month,
@@ -51,11 +54,13 @@ def generate_monthly_report(user_id):
     
     except User.DoesNotExist:
         return f"Пользователь с ID {user_id} не найден"
+    
     except Exception as e:
         return f"Ошибка при создании отчета: {str(e)}"
 
 @shared_task
 def generate_csv_export(user_id, year=None, month=None):
+
     """
     Генерирует экспорт транзакций в CSV для указанного пользователя
     """
@@ -68,23 +73,28 @@ def generate_csv_export(user_id, year=None, month=None):
         user = User.objects.get(id=user_id)
         
         # Получаем транзакции
+
         transactions = Transaction.objects.filter(user=user)
         
         if year:
             transactions = transactions.filter(date__year=year)
+
         if month:
             transactions = transactions.filter(date__month=month)
         
         transactions = transactions.order_by('-date')
         
         # Создаем CSV в памяти
+
         output = io.StringIO()
         writer = csv.writer(output)
         
         # Записываем заголовки
+
         writer.writerow(['Дата', 'Тип', 'Категория', 'Описание', 'Сумма'])
         
         # Записываем транзакции
+
         for transaction in transactions:
             writer.writerow([
                 transaction.date.strftime('%Y-%m-%d'),
@@ -95,6 +105,7 @@ def generate_csv_export(user_id, year=None, month=None):
             ])
         
         # Получаем строковое представление CSV
+
         csv_content = output.getvalue()
         output.close()
         
@@ -109,6 +120,7 @@ def generate_csv_export(user_id, year=None, month=None):
 
 @shared_task
 def process_csv_import(user_id, file_path):
+
     """
     Обрабатывает импорт транзакций из CSV файла
     """
@@ -128,6 +140,7 @@ def process_csv_import(user_id, file_path):
             
             for row in csv_reader:
                 try:
+
                     # Получаем или создаем категорию
                     category_name = row.get('Категория', 'Другое')
                     category, created = Category.objects.get_or_create(
@@ -136,9 +149,11 @@ def process_csv_import(user_id, file_path):
                     )
                     
                     # Определяем тип транзакции (по умолчанию - расход)
+
                     transaction_type = row.get('Тип', '').lower()
                     if 'доход' in transaction_type or 'income' in transaction_type:
                         transaction_type = 'income'
+
                     else:
                         transaction_type = 'expense'
                     
@@ -149,6 +164,7 @@ def process_csv_import(user_id, file_path):
                     except ValueError:
                         try:
                             date = datetime.strptime(date_str, '%d.%m.%Y').date()
+
                         except ValueError:
                             date = timezone.now().date()
                     
@@ -182,6 +198,7 @@ def process_csv_import(user_id, file_path):
             'success': False,
             'error': f"Пользователь с ID {user_id} не найден"
         }
+    
     except Exception as e:
         return {
             'success': False,

@@ -23,6 +23,7 @@ urlpatterns = [
     path('', include(router.urls)),
     
     # Аутентификация и пользователи
+
     path('users/profile/', UserProfileView.as_view(), name='user-profile'),
     path('users/register/', RegisterView.as_view(), name='register'),
     path('users/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -30,13 +31,16 @@ urlpatterns = [
     path('users/logout/', LogoutView.as_view(), name='logout'),
     
     # Импорт/Экспорт
+
     path('import/csv/', ImportCSVView.as_view(), name='import-csv'),
     path('export/csv/', ExportCSVView.as_view(), name='export-csv'),
     path('task-status/<str:task_id>/', TaskStatusView.as_view(), name='task-status'),
     
     # Загрузка файлов (для проверки AWS S3)
+
     path('upload/', FileUploadView.as_view(), name='file-upload'),
     
     # API документация через DRF
+    
     path('auth/', include('rest_framework.urls')),
 ]
