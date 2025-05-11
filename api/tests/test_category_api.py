@@ -6,22 +6,17 @@ from expenses.models import Category
 
 class CategoryAPITests(APITestCase):
     def setUp(self):
-
         # Создаем тестового пользователя
-        
+
         self.user = User.objects.create_user(
             username='testuser', 
             email='test@example.com', 
             password='testpassword123'
         )
         
-
-
         # Авторизуемся
 
         self.client.force_authenticate(user=self.user)
-        
-
 
         # Создаем тестовую категорию
 
@@ -30,8 +25,6 @@ class CategoryAPITests(APITestCase):
             user=self.user
         )
         
-
-
         # URL-ы для тестирования
 
         self.list_url = reverse('category-list')
@@ -41,8 +34,6 @@ class CategoryAPITests(APITestCase):
         """Тест: получение списка категорий"""
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
-
 
         # Проверяем, что есть ответ, без проверки конкретной структуры
         # Просто убеждаемся, что запрос успешен
@@ -51,7 +42,6 @@ class CategoryAPITests(APITestCase):
     
     def test_create_category(self):
         """Тест: создание новой категории"""
-
         # Запомним начальное количество категорий
 
         initial_count = Category.objects.count()
@@ -62,13 +52,10 @@ class CategoryAPITests(APITestCase):
         
         response = self.client.post(self.list_url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        
-
+    
         # Проверяем, что количество категорий увеличилось на 1
 
         self.assertEqual(Category.objects.count(), initial_count + 1)
-        
-
 
         # Проверяем данные новой категории
 
@@ -89,14 +76,10 @@ class CategoryAPITests(APITestCase):
         
         response = self.client.put(self.detail_url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
-
 
         # Перезагружаем объект из БД
 
         self.category.refresh_from_db()
-        
-
 
         # Проверяем, что данные обновились
 
@@ -105,15 +88,12 @@ class CategoryAPITests(APITestCase):
     def test_delete_category(self):
         """Тест: удаление категории"""
 
-
         # Запомним начальное количество категорий
 
         initial_count = Category.objects.count()
         
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        
-
 
         # Проверяем, что количество категорий уменьшилось на 1
 
@@ -125,8 +105,6 @@ class CategoryAPITests(APITestCase):
         # Выходим из системы
 
         self.client.force_authenticate(user=None)
-        
-
 
         # Пытаемся получить список категорий
 

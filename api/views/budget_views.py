@@ -9,6 +9,7 @@ from django.db.models import Sum, F, FloatField, ExpressionWrapper, DecimalField
 import datetime
 
 class BudgetViewSet(viewsets.ModelViewSet):
+    
     """
     API для управления бюджетами пользователя.
     """
@@ -24,12 +25,15 @@ class BudgetViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def status(self, request):
+
         """Получить статус выполнения всех бюджетов"""
+
         now = timezone.now()
         year = int(request.query_params.get('year', now.year))
         month = int(request.query_params.get('month', now.month))
         
         # Получаем бюджеты за указанный месяц
+
         budgets = self.get_queryset().filter(
             year=year,
             month=month
@@ -38,6 +42,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
         results = []
         
         for budget in budgets:
+
             # Вычисляем сумму расходов по этой категории
             spent = budget.spent
             

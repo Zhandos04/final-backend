@@ -8,6 +8,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 class FileUploadView(views.APIView):
+
     """
     API для загрузки файлов в AWS S3 или локальное хранилище.
     Через этот эндпоинт можно проверить, работает ли AWS S3.
@@ -90,6 +91,7 @@ class FileUploadView(views.APIView):
             
             if use_s3:
                 try:
+
                     # Используем S3
                     from storages.backends.s3boto3 import S3Boto3Storage
                     storage = S3Boto3Storage()
@@ -101,6 +103,7 @@ class FileUploadView(views.APIView):
                     storage_info['region'] = settings.AWS_S3_REGION_NAME
                     
                 except Exception as e:
+
                     # Если произошла ошибка при использовании S3, 
                     # переходим на локальное хранилище
                     storage_info['s3_error'] = str(e)
@@ -108,6 +111,7 @@ class FileUploadView(views.APIView):
                     use_s3 = False
             
             # Если S3 отключен или возникла ошибка, используем локальное хранилище
+
             if not use_s3:
                 from django.core.files.storage import default_storage
                 
@@ -117,6 +121,7 @@ class FileUploadView(views.APIView):
                 storage_info['message'] = 'Файл успешно загружен в локальное хранилище'
             
             # Общий ответ
+            
             return Response({
                 'status': 'success',
                 'file_url': file_url,

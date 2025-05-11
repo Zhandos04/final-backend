@@ -6,6 +6,7 @@ from api.serializers.transaction_serializers import CategorySerializer
 from api.throttling import UserRateThrottle
 
 class CategoryViewSet(viewsets.ModelViewSet):
+
     """
     API для управления категориями транзакций пользователя.
     """
@@ -25,6 +26,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def expense(self, request):
+
         """Получить категории расходов"""
         # Предполагаем, что категории расходов и доходов можно различить по транзакциям
         expense_categories = self.get_queryset().filter(
@@ -36,6 +38,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def income(self, request):
+        
         """Получить категории доходов"""
         income_categories = self.get_queryset().filter(
             transaction__transaction_type='income'

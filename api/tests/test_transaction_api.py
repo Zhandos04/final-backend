@@ -8,9 +8,7 @@ from datetime import date
 
 class TransactionAPITests(APITestCase):
     def setUp(self):
-
         # Создаем тестового пользователя
-
         self.user = User.objects.create_user(
             username='testuser', 
             email='test@example.com', 
@@ -145,6 +143,6 @@ class TransactionAPITests(APITestCase):
         self.client.force_authenticate(user=None)
         
         # Пытаемся получить список транзакций
-        
+
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

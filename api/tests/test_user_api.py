@@ -6,8 +6,6 @@ from users.models import Profile
 
 class UserProfileAPITests(APITestCase):
     def setUp(self):
-
-        
         # Создаем тестового пользователя
         self.user = User.objects.create_user(
             username='testuser', 
@@ -15,19 +13,13 @@ class UserProfileAPITests(APITestCase):
             password='testpassword123'
         )
         
-
-
         # Обновляем профиль пользователя
         self.user.profile.currency = '₽'
         self.user.profile.save()
         
-
-
         # Авторизуемся
         self.client.force_authenticate(user=self.user)
         
-
-
         # URL для тестирования
         self.profile_url = reverse('user-profile')
         self.register_url = reverse('register')
@@ -54,12 +46,10 @@ class UserProfileAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
 
-
         # Перезагружаем объект из БД
         self.user.refresh_from_db()
         self.user.profile.refresh_from_db()
         
-
 
         # Проверяем, что данные обновились
         self.assertEqual(self.user.username, 'updateduser')
@@ -68,7 +58,6 @@ class UserProfileAPITests(APITestCase):
     
     def test_register_user(self):
         """Тест: регистрация нового пользователя"""
-
 
         # Выходим из системы
         self.client.force_authenticate(user=None)
@@ -85,12 +74,10 @@ class UserProfileAPITests(APITestCase):
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         
-
         
         # Проверяем, что пользователь создан в БД
         self.assertTrue(User.objects.filter(username='newuser').exists())
         
-
 
         # Проверяем, что профиль также создан
         new_user = User.objects.get(username='newuser')
