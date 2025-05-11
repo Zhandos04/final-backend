@@ -1,8 +1,6 @@
-# api/serializers/budget_serializers.py
 from rest_framework import serializers
-from expenses.models import Category  # Этот импорт отсутствовал
+from expenses.models import Category
 
-# Предполагаем, что мы создадим новую модель Budget
 class BudgetSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=100)
