@@ -6,6 +6,8 @@ from users.models import Profile
 
 class UserProfileAPITests(APITestCase):
     def setUp(self):
+
+        
         # Создаем тестового пользователя
         self.user = User.objects.create_user(
             username='testuser', 
@@ -13,13 +15,19 @@ class UserProfileAPITests(APITestCase):
             password='testpassword123'
         )
         
+
+
         # Обновляем профиль пользователя
         self.user.profile.currency = '₽'
         self.user.profile.save()
         
+
+
         # Авторизуемся
         self.client.force_authenticate(user=self.user)
         
+
+
         # URL для тестирования
         self.profile_url = reverse('user-profile')
         self.register_url = reverse('register')
@@ -45,10 +53,14 @@ class UserProfileAPITests(APITestCase):
         response = self.client.put(self.profile_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
+
+
         # Перезагружаем объект из БД
         self.user.refresh_from_db()
         self.user.profile.refresh_from_db()
         
+
+
         # Проверяем, что данные обновились
         self.assertEqual(self.user.username, 'updateduser')
         self.assertEqual(self.user.email, 'updated@example.com')
@@ -56,6 +68,8 @@ class UserProfileAPITests(APITestCase):
     
     def test_register_user(self):
         """Тест: регистрация нового пользователя"""
+
+
         # Выходим из системы
         self.client.force_authenticate(user=None)
         
@@ -71,21 +85,23 @@ class UserProfileAPITests(APITestCase):
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         
+
+        
         # Проверяем, что пользователь создан в БД
         self.assertTrue(User.objects.filter(username='newuser').exists())
         
+
+
         # Проверяем, что профиль также создан
         new_user = User.objects.get(username='newuser')
         self.assertTrue(hasattr(new_user, 'profile'))
         
-        # Проверяем данные нового пользователя
         self.assertEqual(new_user.email, 'new@example.com')
         self.assertEqual(new_user.first_name, 'John')
         self.assertEqual(new_user.last_name, 'Doe')
     
     def test_register_user_password_mismatch(self):
         """Тест: регистрация с несовпадающими паролями должна возвращать ошибку"""
-        # Выходим из системы
         self.client.force_authenticate(user=None)
         
         data = {
@@ -100,5 +116,4 @@ class UserProfileAPITests(APITestCase):
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
-        # Проверяем, что пользователь не создан в БД
         self.assertFalse(User.objects.filter(username='newuser').exists())
