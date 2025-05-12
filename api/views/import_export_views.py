@@ -8,7 +8,7 @@ from api.throttling import UserRateThrottle
 from celery.result import AsyncResult
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-
+from django.utils import timezone
 
 class CSVBaseView(views.APIView):
     """Базовый класс для работы с CSV файлами"""
